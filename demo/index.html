@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- 业务:当调用A接口之后才能调用B接口获取数据 -->
+  <!-- 1.XHR -->
+
+
+  <!-- <script>
+      const xhr = new XMLHttpRequest()
+      // 先获取A数据
+      xhr.open('get','http://localhost:3000/a')
+      xhr.send()
+      xhr.onload = function(){
+        console.log(xhr.responseText);
+        // 获取B数据
+        const xhr2 = new XMLHttpRequest()
+        xhr2.open('get','http://localhost:3000/b')
+        xhr2.send()
+        xhr2.onload = function(){
+          console.log(xhr.responseText);
+        }
+      }
+  </script> -->
+
+
+  <!-- 2.PROMISE -->
+  <!-- <script>
+    const axios = function (url) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('get', url)
+        xhr.send()
+        xhr.onload = function () {
+          // 成功获取数据
+          resolve(xhr.responseText)
+        }
+        xhr.onerror = function () {
+          // 请求失败
+          reject(new Error('请求失败'))
+        }
+      })
+    }
+    axios('http://localhost:3000/a').then(res => {
+      console.log(res)
+      // 调用完之后还要调用axios对象 就return一个
+      return axios('http://localhost:3000/b')
+    }).then(res =>{
+      console.log(res)
+    })
+  </script> -->
+
+
+  <!-- 3.ASYNC AWAIT 基于promise -->
+
+
+  <script>
+    const axios = function (url) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('get', url)
+        xhr.send()
+        xhr.onload = function () {
+          // 成功获取数据
+          resolve(xhr.responseText)
+        }
+        xhr.onerror = function () {
+          // 请求失败
+          reject(new Error('请求失败'))
+        }
+      })
+    }
+    const getData = async () => {
+      const a = await axios('http://localhost:3000/a')
+      const b = await axios('http://localhost:3000/b')
+      console.log(a, b);
+    }
+    getData()
+    // 当使用await修饰一个函数 返回一个promise
+    // 不需要回调函数 可直接获取promise的成功结果
+    // await需要用在外部有async包裹
+    // 使用了await之后 后边的函数会同步执行 阻碍程序执行
+    // 如果是async修饰的函数是会异步执行的不会阻碍程序的运行
+    
+  </script>
+</body>
+
+</html>
