@@ -2,12 +2,24 @@
 import axios from 'axios'
 import store from '@/store'
 import router from '@/router'
+import JSONBIGINT from 'json-bigint'
 // 1. 默认配置 基准地址
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
 // 配置头部的代码不能再此处定义
 // 这里的代码只会在刷新页面后只会执行一次 以后就不执行
 // axios.defaults.headers.Authorization = `Bearer ${store.getUser().token}`
 
+// `transformResponse` 在传递给 then/catch 前，允许修改响应数据  而且在响应拦截器之前
+// 这里是解决大数字问题
+axios.defaults.transformResponse = [(data) => {
+  // data json格式的字符串
+  // 当后端没有响应的时候  转换会报错  捕获这个错误  处理：不去转换直接返回
+  try {
+    return JSONBIGINT.parse(data)
+  } catch (e) {
+    return data
+  }
+}]
 // 解决方案 在每一次请求前 都会带上token设置在头部
 
 // 请求拦截器  在每次发送请求前 可以处理一些业务逻辑
@@ -20,13 +32,13 @@ axios.interceptors.request.use(config => {
   // 返回配置好的config 给发请求的时候使用
   return config
 }, err =>
-  // 当拦截成功的函数中处理逻辑发生异常 会触发第二个错误函数
-  // 对错误请求做些什么
-  // new Promise() 可能成功可能失败
-  // Promise.resolve()一定成功的Promise
-  // Promise.reject()一定失败的Promise
-  // 把错误封装成一个错误promise对象 提供给axios使用
-  // 写法是固定的基本不变
+// 当拦截成功的函数中处理逻辑发生异常 会触发第二个错误函数
+// 对错误请求做些什么
+// new Promise() 可能成功可能失败
+// Promise.resolve()一定成功的Promise
+// Promise.reject()一定失败的Promise
+// 把错误封装成一个错误promise对象 提供给axios使用
+// 写法是固定的基本不变
   Promise.reject(err)
 )
 
@@ -51,11 +63,12 @@ axios.interceptors.response.use(function (response) {
   // 对响应错误做点什么
   // error对象包含了错误响应对象 error.response
   // 状态码 err.response.status 就是
-  if (error.response.status === 401) {
+  if (error.response && error.response.status === 401) {
     // 如果是vue组件中 : 可以用this.$router.push('/login')  $router是路由实例 提供了push函数
     // 这里是js模块  ：  导入创建好的router实例对象调用push函数
     router.push('/login')
   }
   return Promise.reject(error)
 })
+
 export default axios

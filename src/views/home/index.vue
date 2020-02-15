@@ -6,8 +6,16 @@
       <!-- 菜单 -->
       <!-- :collapse=""菜单栏的展开与收起 -->
       <!-- router 开启路由模式 启用该模式后会在激活导航时以index作为path进行路由跳转 -->
+      <!-- 刷新页面后当前激活的菜单丢失了激活样式 -->
+      <!-- default-active 的值应该是当前路由的路径-->
+      <!-- $router是路由的实例 他可以调用一些API 比如push -->
+      <!-- $route是当前路由信息对象 他可以获取当前路由的信息 比如路径(path)或者传参(query|params) -->
+      <!-- path 获取路径
+          query 获取传参 ?后边键值对方式传参
+          params 获取传参 /路径后面的传参
+      -->
       <el-menu
-        default-active="1"
+        :default-active="$route.path"
         background-color="#002033"
         text-color="#fff"
         active-text-color="#ffd04b"
@@ -48,7 +56,7 @@
     <el-container>
       <el-header>
         <span @click="toggleAside" class="el-icon-s-fold icon"></span>
-        <span class="text">江苏传智播客科技教育有限公司</span>
+        <span class="text">易</span>
         <!-- 下拉菜单 -->
         <el-dropdown class="my-dropdown" @command="handler">
           <span class="el-dropdown-link">
