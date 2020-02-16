@@ -109,6 +109,7 @@
       <!-- :page-size 每页多少条数据 -->
       <!-- :current-page 动态绑定当前页 -->
       <!-- @current-change 事件不带括号拿默认参数 带括号需要自己传参 -->
+      <!-- hide-on-single-page 是否只有一页的时候隐藏-->
       <el-pagination
         style="margin-top:20px;text-align:right"
         background

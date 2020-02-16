@@ -21,6 +21,7 @@ import axios from '@/api'
 
 // 面包屑 使用自己的插件
 import plugin from '@/plugin'
+import '@/styles/index.less'
 Vue.use(plugin)
 Vue.prototype.$http = axios
 Vue.use(ElementUI)
