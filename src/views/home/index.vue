@@ -1,19 +1,9 @@
 <template>
   <el-container class="container-home">
-    <el-aside :width="isOpen ? '200px' : '64px'">
+    <el-aside :width="isOpen?'200px':'64px'">
       <!-- logo -->
       <div class="logo" :class="{minLogo: !isOpen}"></div>
       <!-- 菜单 -->
-      <!-- :collapse=""菜单栏的展开与收起 -->
-      <!-- router 开启路由模式 启用该模式后会在激活导航时以index作为path进行路由跳转 -->
-      <!-- 刷新页面后当前激活的菜单丢失了激活样式 -->
-      <!-- default-active 的值应该是当前路由的路径-->
-      <!-- $router是路由的实例 他可以调用一些API 比如push -->
-      <!-- $route是当前路由信息对象 他可以获取当前路由的信息 比如路径(path)或者传参(query|params) -->
-      <!-- path 获取路径
-          query 获取传参 ?后边键值对方式传参
-          params 获取传参 /路径后面的传参
-      -->
       <el-menu
         :default-active="$route.path"
         background-color="#002033"
@@ -37,7 +27,7 @@
         </el-menu-item>
         <el-menu-item index="/publish">
           <i class="el-icon-s-promotion"></i>
-          <span slot="title">发布文字</span>
+          <span slot="title">发布文章</span>
         </el-menu-item>
         <el-menu-item index="/comment">
           <i class="el-icon-chat-dot-round"></i>
@@ -56,7 +46,7 @@
     <el-container>
       <el-header>
         <span @click="toggleAside" class="el-icon-s-fold icon"></span>
-        <span class="text">易</span>
+        <span class="text">江苏传智播客科技教育有限公司</span>
         <!-- 下拉菜单 -->
         <el-dropdown class="my-dropdown" @command="handler">
           <span class="el-dropdown-link">
@@ -65,13 +55,13 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="setting" icon="el-icon-setting">个人设置</el-dropdown-item>
-            <el-dropdown-item command="logout" icon="el-icon-unlock">退出登录</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-setting" command="setting">个人设置</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-unlock" command="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
       <el-main>
-        <!-- 二级路由显示位置 -->
+        <!-- 二级路由的显示位置 -->
         <router-view></router-view>
       </el-main>
     </el-container>
@@ -80,53 +70,66 @@
 
 <script>
 import store from '@/store'
+import eventBus from '@/eventBus'
 export default {
   data () {
     return {
-      // 表示左侧菜单是展开还是收起 默认是收起的
+      // 表示左菜单是展开还是收起
       isOpen: true,
-      // 用户名 和头像
+      // 用户名称
       name: '',
+      // 用户头像
       photo: ''
     }
   },
   created () {
-    // 从本都获取用户信息
+    // 从本地获取用户信息
     const user = store.getUser()
     this.name = user.name
     this.photo = user.photo
+    // 绑定事件，先绑定后触发，越早绑定越好。
+    eventBus.$on('updateUserName', (name) => {
+      this.name = name
+    })
+    eventBus.$on('updateUserPhoto', (photo) => {
+      this.photo = photo
+    })
   },
   methods: {
-    // 切换左侧侧边栏的状态
-    // 宽度 logo 导航菜单组件
     toggleAside () {
+      // 切换左菜单
+      // 宽度  logo  导航菜单组件
       this.isOpen = !this.isOpen
     },
-    // 使用组件时 绑定原生事件的时候要看组件是否支持这个事件
-    // 参考组件的说明文档
-    // 但是组件解析后的html元素是支持click事件的
-    // 在绑定事件的时候可以绑定事件修饰符 .native 加上后相当于给组件解析后的dom绑定事件
+    // 1. 使用组件注意：绑定原生事件的时候注意组件是否支持了这个事件。
+    // 2. 请参考 element-ui 的说明文档
+    // 3. 但是组件解析后的html元素是支持click事件的
+    // 4. 在绑定事件的时候  使用事件修饰符  .native 原生
+
+    // 去个人设置
     setting () {
       this.$router.push('/setting')
     },
+    // 去退出登录
     logout () {
       store.delUser()
       this.$router.push('/login')
     },
-    // 这里的command是参数
+    // 处理指令函数
     handler (command) {
-      // 如果是setting跳转去个人设置 如果是logout 清除用户信息去登录
-      // 如果指令是setting调用的是this.setting()
-      // 如果指令是logout调用的就是this.logout()
-      // 动态调用的指令
-      // 中括号可以传一个变量或者字符串
+      // command 值  setting|logout
+      // 如果是 setting  跳转去个人设置  如果是logout  清楚用户信息跳转去登录
+      // if (command === 'setting')
+      // if (command === 'logout')
+      // 如果指令是setting调用的是this.setting() this['setting']()
+      // 如果指令是logout调用的是this.logout() this['logout']()
       this[command]()
     }
   }
 }
 </script>
 
-<style lang="less" scoped>
+<style scoped lang='less'>
 .container-home {
   position: absolute;
   left: 0;
@@ -136,6 +139,20 @@ export default {
   // element-ui提供的组件 解析后在容器上最近一个和组件同名css类
   .el-aside {
     background: #002033;
+    .logo {
+      width: 100%;
+      height: 60px;
+      background: #002244 url(../../assets/images/logo_admin.png) no-repeat center /
+        140px auto;
+    }
+    // 将来覆盖logo的样式
+    .minLogo {
+      background-image: url(../../assets/images/logo_admin_01.png);
+      background-size: 36px auto;
+    }
+    .el-menu{
+      border-right: none;
+    }
   }
   .el-header {
     border-bottom: 1px solid #ddd;
@@ -161,22 +178,6 @@ export default {
         vertical-align: middle;
         padding-left: 5px;
       }
-    }
-  }
-  .el-aside {
-    background: #002033;
-    .logo {
-      width: 100%;
-      height: 60px;
-      background: #002244 url(../../assets/images/logo_admin.png) no-repeat
-        center / 140px auto;
-    }
-    .minLogo {
-      background-image: url("../../assets/images/logo_admin_01.png");
-      background-size: 36px auto;
-    }
-    .el-menu {
-      border-right: none;
     }
   }
 }
